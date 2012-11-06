@@ -75,6 +75,7 @@ class TileURLTemplate(object):
         self.template= template
         self.format = format
         self.with_quadkey = True if '%(quadkey)' in template else False
+        self.with_quadkey_path = True if '%(quadkey_path)' in template else False
         self.with_tc_path = True if '%(tc_path)' in template else False
         self.with_tms_path = True if '%(tms_path)' in template else False
         self.with_arcgiscache_path = True if '%(arcgiscache_path)' in template else False
@@ -86,6 +87,8 @@ class TileURLTemplate(object):
         data['format'] = format or self.format
         if self.with_quadkey:
             data['quadkey'] = quadkey(tile_coord)
+        if self.with_quadkey_path:
+            data['quadkey_path'] = quadkey_path(tile_coord)
         if self.with_tc_path:
             data['tc_path'] = tilecache_path(tile_coord)
         if self.with_tms_path:
@@ -136,6 +139,23 @@ def quadkey(tile_coord):
             digit += 2
         quadKey += str(digit)
     return quadKey
+
+def quadkey_path(tile_coord):
+    """
+    >>> quadkey_path((3,3,5))
+    '00/033'
+    >>> quadkey_path((6,3,8))
+    '000/001/32'
+    """
+    quadKey = quadkey(tile_coord)
+    path = ""
+    i = 0
+    for char in quadKey:
+        if i % 3 == 0:
+            path += '/'
+        path += char
+        i += 1
+    return path[1:]
 
 def tms_path(tile_coord):
     """
