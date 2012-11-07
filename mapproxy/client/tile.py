@@ -149,15 +149,18 @@ def quadkey_path(tile_coord):
     >>> quadkey_path((6,3,8))
     '000/001/32'
     """
+    z = tile_coord[2]
+    if z == 0:
+        return '0'
     quadKey = quadkey(tile_coord)
-    path = ""
-    i = 0
+    path = "0"
+    i = 1
     for char in quadKey:
         if i % 3 == 0:
             path += '/'
         path += char
         i += 1
-    return path[1:]
+    return path
 
 def tms_path(tile_coord):
     """
