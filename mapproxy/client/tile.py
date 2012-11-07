@@ -129,6 +129,8 @@ def quadkey(tile_coord):
     '21'
     """
     x, y, z = tile_coord
+    if z == 0:
+        return '0'
     quadKey = ""
     for i in range(z,0,-1):
         digit = 0
