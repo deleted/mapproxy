@@ -71,6 +71,7 @@ class TiledSource(MapLayer):
 
         tile_coord = tiles.next()
 
+        log.info("tile_coord request: "+ str(tile_coord))
         try:
             return self.client.get_tile(tile_coord, format=query.format)
         except HTTPClientError, e:
