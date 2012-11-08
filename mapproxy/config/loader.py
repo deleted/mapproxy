@@ -816,8 +816,13 @@ class TileSourceConfiguration(SourceConfiguration):
         image_opts = self.image_opts()
         error_handler = self.on_error_handler()
 
-        format = file_ext(params['format'])
-        client = TileClient(TileURLTemplate(url, format=format), http_client=http_client, grid=grid)
+        if self.get.conf('format') and isinstance(self.conf['format'], (tuple, list)):
+            # If given a list of formats, use a TileClient that tries various extensions until it finds a valid one.
+            formats = [ file_ext(f) for f in self.conf['format'] ]
+            client = MultiFormatTileClient(TileURLTemplate(url), http_client=http_client, grid=grid, formats=formats)
+        else:
+            format = file_ext(params['format'])
+            client = TileClient(TileURLTemplate(url, format=format), http_client=http_client, grid=grid)
         return TiledSource(grid, client, coverage=coverage, image_opts=image_opts,
             error_handler=error_handler, res_range=res_range)
 

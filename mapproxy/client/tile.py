@@ -48,6 +48,27 @@ class TileClient(object):
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, self.url_template)
 
+class MultiFormatTileClient(TileClient):
+    """
+    Given a list of formats, this client will try to retrieve URLs with each format
+    specified, until it finds one that doesn't 404.
+    """
+    def __init__(self, formats=['png'], *args, **kwargs):
+        self.formats = formats
+        super(self, MultiFormatTileClient).__init__(self, *args, **kwargs)
+
+    def get_tile(self, tile_coord, formats=None):
+        if formats == None:
+            formats = self.formats
+        format = formats.pop(0)
+        try:
+            return super(self, MultiFormatTileClient).get_tile(tile_coord, format)
+        except HTTPClientError, e:
+            if e.response_code == 404 and len(formats) > 0:
+                return self.get_tile(tile_coord, formats)
+            else:
+                raise e
+
 class TileURLTemplate(object):
     """
     >>> t = TileURLTemplate('http://foo/tiles/%(z)s/%(x)d/%(y)s.png')
