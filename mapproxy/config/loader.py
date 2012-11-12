@@ -793,7 +793,7 @@ class TileSourceConfiguration(SourceConfiguration):
     defaults = {'grid': 'GLOBAL_MERCATOR'}
 
     def source(self, params=None):
-        from mapproxy.client.tile import TileClient, TileURLTemplate
+        from mapproxy.client.tile import TileClient, TileURLTemplate, MultiFormatTileClient
         from mapproxy.source.tile import TiledSource
 
         if not self.context.seed and self.conf.get('seed_only'):
@@ -816,7 +816,7 @@ class TileSourceConfiguration(SourceConfiguration):
         image_opts = self.image_opts()
         error_handler = self.on_error_handler()
 
-        if self.get.conf('format') and isinstance(self.conf['format'], (tuple, list)):
+        if self.conf.get('format') and isinstance(self.conf['format'], (tuple, list)):
             # If given a list of formats, use a TileClient that tries various extensions until it finds a valid one.
             formats = [ file_ext(f) for f in self.conf['format'] ]
             client = MultiFormatTileClient(TileURLTemplate(url), http_client=http_client, grid=grid, formats=formats)
